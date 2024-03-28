@@ -1,0 +1,45 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drug.graduate.mapper.UserMapper">
+
+    <insert id="addAccount" parameterType="map">
+        insert into user(name, password, sex, identity, email, phoneNumber,realName) values (#{name}, #{password},
+                                                                                                   #{sex}, #{identity},
+                                                                                                  #{email}, #{phone_number},#{real_name})
+    </insert>
+
+    <select id="queryAccountById" resultType="com.drug.graduate.entity.User">
+        select * from user where id=#{id}
+    </select>
+
+    <delete id="deleteAccountById">
+        delete from user where id=#{id}
+    </delete>
+
+    <select id="testAccount" resultType="java.lang.Integer">
+        SELECT  COALESCE((SELECT IFNULL(id,0) from user where phoneNumber = #{param1} and password = #{param2}),0)  as id
+    </select>
+
+   <select id="queryAccountByPhone" resultType="java.lang.String">
+       SELECT  phoneNumber from user where phoneNumber = #{phoneNumber}
+   </select>
+
+    <insert id="addAddress">
+        insert into address(userId, phoneNumber, name, province, city, county, detail) values (#{userId},#{phoneNumber},#{name},
+                                                                                                #{province},#{city},#{county},#{detail})
+    </insert>
+
+    <select id="queryAddressById" resultType="com.drug.graduate.entity.Address">
+        select * from address where userId = #{userId}
+    </select>
+
+    <delete id="deleteAddress">
+        delete from address where userId = #{param1} and id = #{param2}
+    </delete>
+
+    <select id="queryOrderAddress" resultType="com.drug.graduate.entity.Address">
+        select * from address where id = #{id}
+    </select>
+</mapper>

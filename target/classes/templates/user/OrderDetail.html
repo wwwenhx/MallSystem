@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="goods">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <title>Title</title>
+</head>
+<body id="body">
+<table class="layui-table">
+    <colgroup>
+        <col width="150">
+        <col width="200">
+        <col>
+    </colgroup>
+    <thead>
+    <tr id="tr">
+        <th>商品名称</th>
+        <th>商品单价</th>
+        <th>商品数量</th>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+
+    </tbody>
+</table>
+
+<div class="layui-inline">
+    <label class="layui-form-label">总价</label>
+    <div class="layui-input-inline" style="width: 100px;">
+        <input id="price" type="text" name="" readonly="readonly" class="layui-input" th:value="${price}">
+    </div>
+</div>
+
+<div class="layui-inline">
+    <label class="layui-form-label">订单状态</label>
+    <div class="layui-input-inline" style="width: 100px;">
+        <input id="status" type="text" name="" readonly="readonly" class="layui-input" th:value="${status}">
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+    var userId = [[${userId}]];
+    var orderId = [[${orderId}]];
+    var status = [[${status}]];
+    var price = [[${price}]];
+    var statusType = status.toString();
+    $.ajax({
+        url:'/orderService/orderGoodsData',
+        data:{
+            userId:userId,
+            orderId:orderId
+        },
+        dataType:'json',
+        type:'post',
+        success:function (data){
+            let jsonData = eval(data);
+            let goods = jsonData.goods;
+            let num = jsonData.num;
+            $.each(goods, function (i,val){
+                let tr = $('<tr></tr>');
+                let goodsName = $('<td>' + val.name + '</td>');
+                let num = $('<td id="num' + i + '"></td>');
+                let price = $('<td>¥ ' + val.price + '</td>');
+                tr.append(goodsName, price,num);
+                $('#tbody').append(tr);
+            });
+
+            for (let i = 0; i < num.length; i ++){
+                console.log(num[i]);
+                $('#num'+i).append(num[i]);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+
+</script>
+
+<script>
+    if(statusType === '未发货' || statusType === '已发货'){
+        let inline = $('<div id="inline" style="margin-left: 10%;" class="layui-inline"></div>');
+        let inline_btn = $('<div class="layui-input-inline" style="width: 100px;"></div>');
+        let btn = $('<button onclick="refund()" class="layui-btn layui-btn-sm">申请退款</button>');
+        inline_btn.append(btn);
+        inline.append(inline_btn);
+        $('#body').append(inline);
+    };
+    if(statusType === '已发货'){
+        let inline_btn = $('<div class="layui-input-inline" style="width: 100px;"></div>');
+        let btn = $('<button onclick="receiveOrder()" class="layui-btn layui-btn-sm">确认收货</button>');
+        inline_btn.append(btn);
+        $('#inline').append(inline_btn);
+    };
+</script>
+
+<script>
+    if(statusType === '未支付'){
+        let inline = $('<div style="margin-left: 10%;" class="layui-inline"></div>');
+        let inline_btn1 = $('<div class="layui-input-inline" style="width: 100px;"></div>');
+        let inline_btn2 = $('<div class="layui-input-inline" style="width: 100px;"></div>');
+        let btn = $('<button onclick="cancel()" class="layui-btn layui-btn-sm">取消订单</button>');
+        let btn2 = $('<button onclick="settlement()" class="layui-btn layui-btn-sm">去结算</button>');
+        inline_btn1.append(btn);
+        inline_btn2.append(btn2);
+        inline.append(inline_btn1,inline_btn2);
+        $('#body').append(inline);
+    }
+</script>
+
+<script>
+    if(statusType === '已完成'){
+        let inline = $('<div id="inline" style="margin-left: 10%;" class="layui-inline"></div>');
+        let inline_btn = $('<div class="layui-input-inline" style="width: 100px;"></div>');
+        let btn = $('<button onclick="confirmDeleteOrder()" class="layui-btn layui-btn-sm">删除订单</button>');
+        inline_btn.append(btn);
+        inline.append(inline_btn);
+        $('#body').append(inline);
+    };
+</script>
+
+<script>
+    function refund(){
+        $.ajax({
+            url:'/orderService/refundOrder',
+            data:{
+                orderId:orderId,
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                let dataJson = eval(data);
+                alert(dataJson.body);
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    };
+</script>
+
+<script>
+    function cancel(){
+        $.ajax({
+            url:'/orderService/cancelOrder',
+            data:{
+                orderId:orderId
+            },
+            dataType:'json',
+            type:'post',
+            success:function (data){
+                let dataJson = eval(data);
+                alert(dataJson.body);
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+</script>
+
+<script>
+    function settlement(){
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.location.href="/payService/alipay?price="+price+"&orderId="+orderId;
+        parent.layer.close(index);
+
+    }
+</script>
+
+<script>
+    function receiveOrder(){
+        $.ajax({
+            url:'/orderService/receiveOrder',
+            data:{
+                userId:userId,
+                orderId:orderId
+            },
+            dataType:'json',
+            type:'post',
+            success:function (data){
+                alert("收货成功");
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求错误");
+            }
+        });
+    }
+</script>
+
+<script>
+    function confirmDeleteOrder(){
+
+        layer.confirm('确定删除订单吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            deleteOrder();
+        }, function(){
+            layer.msg("取消成功");
+        });
+    }
+</script>
+
+<script>
+    function deleteOrder(){
+        $.ajax({
+            url:'/orderService/deleteOrder',
+            data:{
+                orderId:orderId
+            },
+            dataType:'json',
+            type:'post',
+            async:false,
+            success:function (data){
+                let dataJson = eval(data);
+                alert(dataJson.body);
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+</script>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="goods">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+        <script type="text/javascript" th:src="@{/js/goodsDetail.js}"></script>
+    <title>商品详情页</title>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title a" style="margin-top: 10px;">
+    <legend>药品商城</legend>
+</fieldset>
+
+<ul class="layui-nav">
+    <li class="layui-nav-item"><a onclick="index()" th:href="@{/indexService/index}">首页</a></li>
+    <li class="layui-nav-item  layui-this">
+    <li class="layui-nav-item layui-this">
+        <a th:href="@{/indexService/goods}">药品</a>
+    </li>
+    </li>
+    <li class="layui-nav-item"><a th:href="@{/indexService/shop}">购物车</a></li>
+    <!--<li class="layui-nav-item">
+        <a href="javascript:;">类别</a>
+        <dl class="layui-nav-child">
+            <dd><a href="">菜单1</a></dd>
+            <dd><a href="">菜单2</a></dd>
+            <dd><a href="">菜单3</a></dd>
+        </dl>
+    </li>-->
+    <li id="toLogin" class="layui-nav-item"><a href="javascript:void(0)" onclick="toLogin()" style="display:block;">登陆</a></li>
+    <li id="toPersonal" style="display: none;" class="layui-nav-item">
+        <a id="userName" th:href="@{/userService/toUserCenter}">个人中心</a>
+        <dl class="layui-nav-child">
+            <dd><a onclick="loginOut()" href="">登出</a></dd>
+        </dl>
+    </li>
+    <!--        <li id="toPersonal" class="layui-nav-item" style="display: none;"><a href="javascript:void(0)">个人中心</a></li>-->
+</ul>
+<input id="id" type="hidden" th:value="${id}">
+
+<div id="goodsDetail">
+    <div id="img" style="float: left;padding-left: 18%;padding-top: 8%;"></div>
+    <div id="detail" style="float: left;padding-left: 10%;padding-top: 8%;">
+        <table class="layui-table" lay-even lay-skin="nob" style="width: 350px;height: 400px;">
+            <colgroup>
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <tr id="name">
+                <th>名称</th>
+            </tr>
+            <tr id="price">
+                <th>单价</th>
+            </tr>
+            <tr id="specifications">
+                <th>规格</th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div style="clear: both;padding-left: 52%;">
+    <button class="layui-btn layui-btn-normal" onclick="addGoods()" value=加入购物车>加入购物车</button>
+</div>
+
+<div style="width: 72%;padding-left: 10%;">
+    <div class="layui-collapse" >
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">详细信息</h2>
+            <div class="layui-colla-content">
+                <table class="layui-table" lay-even lay-skin="nob" style="width: 350px;height: 400px;">
+                    <colgroup>
+                        <col width="400">
+                        <col width="500">
+                        <col>
+                    </colgroup>
+                    <tr id="goodsId">
+                        <th>药品编号</th>
+                    </tr>
+                    <tr id="goodsType">
+                        <th>药品类型</th>
+                    </tr>
+                    <tr id="factory">
+                        <th>生产企业</th>
+                    </tr>
+                    <tr id="people">
+                        <th>适用人群</th>
+                    </tr>
+                    <tr id="usage">
+                        <th>用法用量</th>
+                    </tr>
+                    <tr id="synopsis">
+                        <th>药品简介</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div style="padding-left: 10%;">
+    <table class="layui-table" style="width: 80%;padding-left: 10%;">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>评论人</th>
+            <th>评论时间</th>
+            <th>内容</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

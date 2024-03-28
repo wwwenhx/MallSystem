@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+    <title>商品页面</title>
+</head>
+<body style="width: 100%; height: 100%; overflow: hidden;">
+<div>
+    <fieldset class="layui-elem-field layui-field-title a" style="margin-top: 10px;">
+        <legend>药品销售系统</legend>
+    </fieldset>
+
+    <ul class="layui-nav">
+        <li class="layui-nav-item"><a onclick="index()" th:href="@{/indexService/index}">首页</a></li>
+        <li class="layui-nav-item">
+        <li class="layui-nav-item">
+            <a th:href="@{/indexService/goods}">药品</a>
+
+        </li>
+        </li>
+        <li class="layui-nav-item"><a onclick="toShop()" href="javascript:;">购物车</a></li>
+
+        <li id="toLogin" class="layui-nav-item"><a href="javascript:void(0)" onclick="toLogin()" style="display:block;">登陆</a></li>
+        <li id="toPersonal" style="display: none;" class="layui-nav-item">
+            <a id="userName" th:href="@{/userService/toUserCenter}">个人中心</a>
+            <dl class="layui-nav-child">
+                <dd><a onclick="loginOut()" href="">登出</a></dd>
+            </dl>
+        </li>
+        <!--<li id="toPersonal" class="layui-nav-item" style="display: none;"><a href="javascript:void(0)">个人中心</a></li>-->
+    </ul>
+</div>
+    <span class="layui-breadcrumb" lay-separator="|">
+        <a th:href="@{/goodsService/toGoods}" target="backstage">默认药品</a>
+        <a th:href="@{/goodsService/toGoods(type='感冒发烧')}" target="backstage">感冒发烧</a>
+        <a th:href="@{/goodsService/toGoods(type='止痛药')}" target="backstage">止痛药</a>
+        <a th:href="@{/goodsService/toGoods(type='消炎降火止咳')}" target="backstage">消炎降火止咳</a>
+        <a th:href="@{/goodsService/toGoods(type='肠胃药')}" target="backstage">肠胃药</a>
+        <a th:href="@{/goodsService/toGoods(type='五官用药')}" target="backstage">五官用药</a>
+        <a th:href="@{/goodsService/toGoods(type='皮肤药')}" target="backstage">皮肤药</a>
+        <a th:href="@{/goodsService/toGoods(type='血压药')}" target="backstage">血压药</a>
+        <a th:href="@{/goodsService/toGoods(type='心脑血管')}" target="backstage">心脑血管</a>
+        <a th:href="@{/goodsService/toGoods(type='风湿骨外伤用药')}" target="backstage">风湿骨外伤用药</a>
+        <a th:href="@{/goodsService/toGoods(type='抗生素')}" target="backstage">抗生素</a>
+
+    </span>
+
+    <iframe src="/goodsService/toGoods" name="backstage" style="width:100%; height:80%" ></iframe>
+
+
+    <!--style="margin-top:30%;"
+    style="margin-top:80%;margin-left:30%;"-->
+
+</body>
+</html>

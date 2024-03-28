@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="goods">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.session.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+    <title>购物车</title>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title a" style="margin-top: 10px;">
+    <legend>药品销售系统</legend>
+</fieldset>
+
+<ul class="layui-nav">
+    <li class="layui-nav-item"><a onclick="index()" th:href="@{/indexService/index}">首页</a></li>
+    <li class="layui-nav-item">
+    <li class="layui-nav-item">
+        <a th:href="@{/indexService/goods}">药品</a>
+
+    </li>
+    </li>
+    <li class="layui-nav-item"><a href="javascript:;" onclick="toShop()">购物车</a></li>
+
+    <li id="toLogin" class="layui-nav-item"><a href="javascript:void(0)" onclick="toLogin()" style="display:block;">登陆</a></li>
+    <li id="toPersonal" style="display: none;" class="layui-nav-item">
+        <a id="userName" th:href="@{/userService/toUserCenter}">个人中心</a>
+        <dl class="layui-nav-child">
+            <dd><a onclick="loginOut()" th:href="@{/indexService/index}">登出</a></dd>
+        </dl>
+    </li>
+</ul>
+
+
+<div class="c-container">
+
+    <div class="w">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>选择</th>
+                    <th><div style="width: 400px" class="t-goods">商品</div></th>
+                    <th><div class="t-price">单价</div></th>
+                    <th><div style="width: 100px" class="t-num">数量</div></th>
+                    <th><div class="t-sum">小计</div></th>
+                    <th><div class="t-action">操作</div></th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
+
+            <!-- 商品详细模块 -->
+            <div class="cart-item-list">
+
+
+            </div>
+
+            <!-- 结算模块 -->
+            <div style="padding: 3%;" class="cart-floatbar">
+                <div style="float: left;padding-left: 2%;" class="select-all">
+                    <input type="checkbox" class="checkall">全选
+                </div>
+
+                <div style="float: left;padding-left: 2%;width: 25%;" class="toolbar-right">
+                    <div style="float: left;padding-left: 5%;" class="amount-sum">已经选<em>0</em>件商品</div>
+                    <div style="float: left;padding-left: 5%;" class="price-sum">总价：<em id="sum-price">¥0.00</em></div>
+                    <div style="float: left;padding-left: 5%;" class="btn-area"><button class="layui-btn layui-btn-sm layui-btn-warm" onclick="toSettlement()" href="javascript:;">去结算</button></div>
+                </div>
+                <div style="float: left;padding-left: 1%;" class="operation">
+                    <button class="clear-all layui-btn layui-btn-sm layui-btn-danger">清理购物车</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div style="display: none;align-content: center;" id="settlement">
+        <div th:replace="@{user/Settlement} :: settlement"></div>
+    </div>-->
+
+</div>
+
+<script>
+    var sum=0;
+    var userId = $.cookie('userId');
+    /*var user = $.cookie('user');*/
+    //var userJson = eval(user);
+    console.log(userId);
+    window.onload=function (){
+        if(userId != null && userId != ''){
+            document.getElementById('toLogin').style.display='none';
+            document.getElementById('toPersonal').style.display='';
+            //$('#userName').val(userJson.name);
+        }
+    }
+
+
+
+    //渲染购物车数据
+    $.ajax({
+        url:"/indexService/getShopping",
+        dataType:"json",
+        type:"post",
+        data:{
+            userId:userId
+        },
+        success:function (data){
+            let dataJson = eval(data)
+            let shoppingData = dataJson.shoppingData;
+            let goodsData = dataJson.goodsData;
+            $.each(goodsData, function(i, val){
+                let cart_item = $('<tr class="cart-item"></tr>');
+                let p_checkbox = $('<td class="p-checkbox"></td>');
+                let p_goods = $('<td class="p-goods"></td>');
+                let p_img = $('<span class="p-img"></span>');
+                let p_msg = $('<span class="p-msg"></span>');
+                let p_price = $('<td class="p-price"></td>');
+                let p_num = $('<td class="p-num"></td>');
+                let quantity_form = $('<div id="quantity-form' + i + '" class="quantity-form"></div>');
+                let p_sum = $('<td id="p-sum' + i + '" class="p-sum">¥ </td>');
+                let p_action = $('<td class="p-action"><a onclick="deleteGoods(this)" id="'+i+'" value="' + val.id + '" href="javascript:;">删除</a></td>');
+                let checkbox = $('<input id="goodsId'+i+'" type="checkbox" name="check" class="j-checkbox" value="'+val.id+'">');
+                let img = $('<img src="' + val.url + '">');
+                /*let goodsId = $('<a id="goodsId' + i + '"></a>');*/
+                /*let num = $('<input id="num" type="text" class="itxt" value="1">');
+                let reduce = $('<a href="javascript:;" class="decrement">-</a>');
+                let plus = $('<a href="javascript:;" class="increment">+</a>');*/
+
+                cart_item.append(p_checkbox, p_goods, p_price, p_num, p_sum, p_action);
+                p_checkbox.append(checkbox);
+                p_goods.append(p_img, p_msg);
+                p_img.append(img);
+                p_msg.append(val.name);
+                p_price.append("¥"+val.price);
+                p_num.append(quantity_form);
+                /*goodsId.append(val.id);*/
+                /*quantity_form.append(reduce, num, plus);*/
+                /*$('.cart-item-list').append(cart_item);*/
+                $('#tbody').append(cart_item);
+                console.log($('#goodsId'+i).val());
+                console.log($('#'+i).attr("value"));
+            });
+            $.each(shoppingData, function (i,val){
+                let sum = val.sumPrice;
+                let sum2= sum.toFixed(2);
+                let num = $('<input style="width: 10%" type="text" class="itxt" value="' + val.num + '">');
+                let reduce = $('<a onclick="reduce(this)" value="' + val.goodsId + '" href="javascript:;" class="decrement">-</a>');
+                let plus = $('<a value="' + val.goodsId + '" href="javascript:;" class="increment">+</a>');
+                let sumPrice = $('<a>'+sum2+'</a>');
+                $('#quantity-form'+i).append(reduce, num, plus);
+                $('#p-sum'+i).append(sumPrice);
+
+            });
+        },
+
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+
+
+
+    $(document).on('change', '.checkall', function () {
+        $(".j-checkbox, .checkall").prop("checked", $(this).prop("checked"));
+        // 改变背景色
+        if ($(this).prop("checked")) {
+            // 添加类 改变背景色
+            $(this).parents(".cart-item").addClass("check-cart-item");
+        } else {
+            // 移除类
+            $(this).parents(".cart-item").toggleClass("check-cart-item");
+        }
+        getSum();
+    })
+
+    // 1.2 小按钮的状态决定全选按钮状态
+    $(document).on('change', '.j-checkbox', function () {
+        // if(按钮选中的个数 === 按钮的总个数){
+        // 全选选中
+        // }else{
+        // 不选择全选
+        // }
+        if ($(".j-checkbox:checked").length === $(".j-checkbox").length) {
+            $(".checkall").prop("checked", true);
+        } else {
+            $(".checkall").prop("checked", false);
+        }
+        // 选中时，背景色改变
+        // ele.parents("指定父级元素")
+        if ($(this).prop("checked")) {
+            $(this).parents(".cart-item").addClass("check-cart-item");
+        } else {
+            $(this).parents(".cart-item").toggleClass("check-cart-item");
+        }
+        // 重新计算小计部分
+        getSum();
+    })
+
+
+    $(document).on('click', '.increment',function () {
+        // 获取当前 + 的兄弟表单的值
+        var n = $(this).siblings(".itxt").val();
+        plus(this,n);
+        console.log(n);
+        // 然后点击一次自增——商品数量
+
+    })
+    // 2.2 -号减少数量
+    $(document).on('click', '.decrement', function () {
+        // 一定是当前加号的兄弟表单的值自增
+        var n = $(this).siblings(".itxt").val();
+        // 商品数量
+        n--;
+        console.log(n);
+        // 三元表达式：判断数量不能小于0
+        n = n <= 0 ? 1 : n;
+        $(this).siblings(".itxt").val(n);
+        // 当前+号区域的单价
+        var p = $(this).parents(".p-num").siblings(".p-price").text();
+        p = parseFloat(p.substr(1));
+        console.log(p);
+        // 获取当前的总价
+        var price = $(this).parents(".p-num").siblings(".p-sum").text();
+        // 去掉￥符号
+        price = parseFloat(price.substr(1));
+        price = (p * n).toFixed(2);
+        console.log(price);
+        $(this).parents(".p-num").siblings(".p-sum").text("￥" + price);
+        getSum();
+    });
+
+    $(document).on('keyup', '.itxt', function () {
+        var n = $(this).val();
+        var p = $(this).parents(".p-num").siblings(".p-price").text();
+        p = parseFloat(p.substr(1));
+        var price = $(this).parents(".p-num").siblings(".p-sum").text();
+        // 去掉￥符号
+        price = parseFloat(price.substr(1));
+        price = (p * n).toFixed(2);
+        console.log(price);
+        $(this).parents(".p-num").siblings(".p-sum").text("￥" + price);
+        getSum();
+    });
+    function getSum() {
+        var totalNumber = 0; // 总件数
+        var totalPrice = 0; // 总价钱
+        // 遍历car-item所有的表单中的商品数量 累加 算出所有商品的总数量
+        $(".itxt").each(function (i, ele) {
+            // 判断 商品对应的按钮是否选中，选中才会结算 不选中不参与结算
+            var singleBtn = $(this).parents(".p-num").siblings(".p-checkbox").children(".j-checkbox");
+            if (singleBtn.prop("checked")) {
+                totalNumber += parseFloat($(ele).val());
+            }
+        })
+        $(".amount-sum em").text(totalNumber);
+
+        // 遍历每个car-item中的商品总计 累加起来算出所有商品价
+        $(".p-sum").each(function (i, ele) {
+            var singleBtn = $(this).siblings(".p-checkbox").children(".j-checkbox");
+            if (singleBtn.prop("checked")) {
+                totalPrice += parseFloat($(ele).text().substr(1));
+                sum = totalPrice.toFixed(2);
+            }
+        });
+        $(".price-sum em").text("￥" + totalPrice.toFixed(2));
+    }
+    // 5. 删除模块
+    // 删除按钮
+    $(document).on('click', '.p-action a', function () {
+        $(this).parents(".cart-item").remove();
+        getSum();
+    });
+    // 删除选中的商品
+    /*$(document).on('click', '.operation .remove-batch',function () {
+        $(".j-checkbox:checked").parents(".cart-item").remove();
+        getSum();
+    });*/
+    // 清空购物车
+    $(document).on('click', '.operation .clear-all', function () {
+        clearShop();
+        $(".cart-item").remove();
+        getSum();
+    });
+
+
+
+    //删除商品
+    function deleteGoods(a){
+        $.ajax({
+            url:"/indexService/deleteGoods",
+            traditional:true,
+            type:"post",
+            dataType:"json",
+            data:{
+                userId:$.cookie('userId'),
+                goodsId:$(a).attr("value")
+            },
+            success:function (data){
+                let jsonData = eval(data);
+                layer.msg("删除商品成功");
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+
+    //减少商品数量
+    function reduce(a){
+        let num = $(a).next().val();
+        if (num == 1){
+            layer.msg("商品数量已经为1");
+            return;
+        };
+        $.ajax({
+            url:"/indexService/reduceGoods",
+            data:{
+              userId:$.cookie('userId'),
+              goodsId:$(a).attr("value")
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                let jsonData = eval(data);
+                if(jsonData.code==200){
+                    layer.msg(jsonData.msg);
+                }
+                if(jsonData.code == 400 ){
+                    layer.msg(jsonData.msg);
+                }
+            },
+            error:function (){
+                alert("请求失败")
+            }
+        });
+    }
+
+    //增加商品数量
+    function plus(a,num){
+        $.ajax({
+            url:"/indexService/plusGoods",
+            data:{
+              userId:$.cookie('userId'),
+              goodsId:$(a).attr("value"),
+              num:num
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                let jsonData = eval(data);
+                if(jsonData.code==200){
+                    num++;
+                    // console.log(n);
+                    // 数量：表单的商品数量
+                    $(a).siblings(".itxt").val(num);
+                    // 当前被点击的 + 区域对应的单价
+                    var p = $(a).parents(".p-num").siblings(".p-price").text();
+                    // 返回的是字符串 所以要把￥截取掉 使用substr()截取
+                    // 截取后还是字符串，用parseFloat转换为数值型
+                    p = parseFloat(p.substr(1));
+                    console.log(p);
+                    // 获取当前的总价
+                    var price = $(a).parents(".p-num").siblings(".p-sum").text();
+                    // 去掉￥符号
+                    price = parseFloat(price.substr(1));
+                    // 保留两位小数点 toFixed(2)
+                    price = (p * num).toFixed(2);
+                    console.log(price);
+                    // 把计算好的商品总和价放到标签里
+                    $(a).parents(".p-num").siblings(".p-sum").text("￥" + price);
+                    // 重新计算小结部分的总额
+                    getSum();
+                    layer.msg(jsonData.msg);
+                }
+                if(jsonData.code == 400 ){
+                    layer.msg(jsonData.msg);
+                }
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+
+
+    //结算界面
+    function toSettlement(){
+        //获取选中的商品的id
+        let check = [];
+        $("input[name='check']:checked").each(function(){
+            console.log($(this).val());
+            check.push($(this).val());
+        });
+        if(check.length==0){
+            alert("未选择商品");
+            return;
+        }
+        $.cookie("check",check,{
+            path:"/"
+        });
+        $.cookie("sum",sum,{
+            path:"/"
+        });
+
+        layer.open({
+            type: 2,//iframe层
+            title: "结算",//标题
+            area: ['70%', '600px'],//弹出区域
+            content: "/userService/toSettlement",//弹出结算界面
+            offset: '50px',//设置弹出层在距离顶部，100px 水平居中
+            end: function (){
+                window.location.reload();
+                return false;
+            }
+        });
+    }
+
+</script>
+
+<script>
+    function clearShop(){
+        $.ajax({
+            url:"/indexService/clearShop",
+            data:{
+                userId:$.cookie('userId')
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                layer.msg("操作成功");
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    };
+</script>
+
+</body>
+</html>

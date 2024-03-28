@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/layui/css/common.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+    <title>药品评论</title>
+</head>
+<body>
+
+    <div>
+        <table style="padding-top: 8%;" class="layui-table" lay-even lay-skin="nob">
+            <colgroup>
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>订单号</th>
+                <th>下单时间</th>
+                <th>订单金额</th>
+            </tr>
+
+            </thead>
+            <tbody id="tbody1">
+
+            </tbody>
+        </table>
+
+        <table style="padding-top: 8%;" class="layui-table" lay-even lay-skin="nob">
+            <colgroup>
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>药品名称</th>
+                <th>药品单价</th>
+                <th>药品简介</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+    </div>
+
+<div>
+    <form class="layui-form" action="">
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">评论内容</label>
+            <div class="layui-input-block">
+                <textarea id="comment" required lay-verify="required" name="comment" placeholder="请输入内容" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<input id="goodsId" type="hidden" th:value="${goodsId}">
+<input id="userId" type="hidden" th:value="${userId}">
+<input id="orderId" type="hidden" th:value="${orderId}">
+    <script>
+        //Demo
+        layui.use('form', function(){
+            var form = layui.form;
+
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                goodsComment();
+                return false;
+            });
+        });
+    </script>
+
+<script>
+    function goodsComment(){
+        $.ajax({
+            url:'/goodsService/addGoodsComment',
+            dataType:'text',
+            type:'post',
+            async:false,
+            data:{
+                userId:$('#userId').val(),
+                goodsId:$('#goodsId').val(),
+                comment:$('#comment').val(),
+                orderId:$('#orderId').val()
+            },
+            success:function (data){
+                alert("评论成功");
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+</script>
+
+    <script>
+        //获取药品所在订单信息
+        $.ajax({
+            url:'/goodsService/getGoodsOrder',
+            data:{
+                orderId:$('#orderId').val(),
+                userId:$('#userId').val()
+            },
+            dataType:'json',
+            type:'post',
+            async:false,
+            success:function (data){
+                let order = eval(data);
+                let tr = $('<tr></tr>');
+                let orderId = $('<td>' + order.id + '</td>');
+                let orderTime = $('<td>' + order.createTime + '</td>');
+                let price = $('<td>' + order.price + '</td>');
+                tr.append(orderId, orderTime,price);
+                $('#tbody1').append(tr);
+            },
+            error:function (){
+                alert("订单信息获取失败");
+            }
+        });
+    </script>
+
+<script>
+    //获取药品数据
+    $.ajax({
+        url:'/indexService/getGoodsDetails',
+        data:{
+            id:$('#goodsId').val(),
+            orderId:$('#orderId').val()
+        },
+        dataType:'json',
+        type:'post',
+        async:false,
+        success:function (data){
+            let jsonData = eval(data);
+            let goodsDetail = jsonData.body;
+            let tr = $('<tr></tr>');
+            let name = $('<td>' + goodsDetail.name + '</td>');
+            let price = $('<td>' + goodsDetail.price + '</td>');
+            let synopsis = $('<td>' + goodsDetail.synopsis + '</td>');
+            tr.append(name,price,synopsis);
+            $('#tbody').append(tr);
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+</script>
+
+
+</body>
+</html>

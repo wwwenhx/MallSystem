@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="settlement">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.session.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <title>订单结算</title>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择地址</label>
+        <div class="layui-input-block">
+            <select  id="address" name="city" lay-verify="required">
+                <option></option>
+                <option th:each="address:${address}" th:value="${address.province}+${address.city}+${address.county}+${address.detail}+'&nbsp&nbsp&nbsp&nbsp'+姓名+':'+${address.name}+'&nbsp'+手机号+':'+${address.phoneNumber}" th:text="${address.province}+${address.city}+${address.county}+${address.detail}+'&nbsp&nbsp&nbsp&nbsp'+姓名+':'+${address.name}+'&nbsp'+手机号+':'+${address.phoneNumber}"></option>
+            </select>
+        </div>
+    </div>
+    <table class="layui-table">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>商品名称</th>
+            <th>商品小计</th>
+            <th>商品数量</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+
+        </tbody>
+    </table>
+    
+    <div class="layui-inline">
+        <label class="layui-form-label">总价</label>
+        <div class="layui-input-inline" style="width: 100px;">
+            <input id="price" type="text" name="" readonly="readonly" class="layui-input" th:value="${sumPrice}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button onclick="toPay()" class="layui-btn">提交订单</button>
+        </div>
+    </div>
+</form>
+
+
+
+<script th:inline="javascript">
+    var check = [];
+    check = [[${check}]];
+    var num2=[];
+    var goodsIdList=[];
+    var price = $('#price').val();
+    window.onload=function (){
+        for (let i = 0; i < check.length; i ++){
+            getGoodsData(check[i]);
+        }
+
+    }
+
+    layui.use('form', function(){
+        var form = layui.form;
+
+        //监听提交
+        /*form.on('submit(formDemo)', function(data){
+            layer.msg(JSON.stringify(data.field));
+            return false;
+        });*/
+    });
+
+   /* $.ajax({
+        url:"/userService/queryAddressById",
+        data:{
+            userId:$.cookie('userId')
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            let address = jsonData.body;
+            $.each(address, function (i,val){
+                let option = $('<option value="' + val.id + '">'+ val.province + val.city + val.county + val.detail + '</option>');
+                $('#address').append(option);
+            });
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });*/
+    function getGoodsData(goodsId){
+        $.ajax({
+            url:"/indexService/getSettlementGoods",
+            data:{
+                goodsId:goodsId,
+                userId:$.cookie('userId')
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                let jsonData = eval(data);
+                let goods = jsonData.goods;
+                let settlementGoods = jsonData.settlementGoods;
+                let tr = $('<tr id="tr"+i></tr>');
+                let name = $('<td>' + goods.name + '</td>');
+                let price = $('<td>¥' + settlementGoods.sumPrice.toFixed(2) + '</td>');
+                let num = $('<td>' + settlementGoods.num + '</td>');
+                num2.push(settlementGoods.num);
+                goodsIdList.push(goods.id);
+                tr.append(name,price,num);
+                $('#tbody').append(tr);
+            },
+            error:function (){
+                alert("获取商品数据失败");
+            }
+        });
+    };
+    console.log(num2);
+    console.log(goodsIdList);
+    function toPay(){
+        console.log($('#address').val());
+        if($('#address').val()==null || $('#address').val() == ""){
+            alert("请选择地址");
+            return;
+        }
+        var address = $('#address option:selected').val();
+        $.cookie("goodsIdList",goodsIdList,{
+            path:"/"
+        });
+        $.cookie("numList",num2,{
+            path:"/"
+        });
+        $.cookie("price",price,{
+            path:"/"
+        });
+
+        //添加未支付订单
+        $.ajax({
+            url:'/orderService/addUnprocessedOrder',
+            dataType:'json',
+            type:'post',
+            async: false,
+            data:{
+                address:address,
+                price:price
+            },
+            success:function (data){
+                let jsonData = eval(data);
+                let orderId = jsonData.body;
+                console.log(orderId);
+                $.cookie("orderId",orderId,{
+                    path:"/"
+                });
+                alert("下单成功");
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.location.href="/payService/alipay?price="+price+"&orderId="+orderId;
+                parent.layer.close(index);
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+
+
+
+
+    }
+</script>
+
+</body>
+</html>

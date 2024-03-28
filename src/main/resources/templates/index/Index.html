@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+</head>
+<body style="width: 100%; height: 100%;">
+<div class="storeHouse">
+    <fieldset class="layui-elem-field layui-field-title a" style="margin-top: 10px;">
+        <legend>药品销售系统</legend>
+    </fieldset>
+
+    <ul class="layui-nav">
+        <li class="layui-nav-item"><a onclick="index()" th:href="@{/indexService/index}">首页</a></li>
+        <li class="layui-nav-item">
+            <a th:href="@{/indexService/goods}">药品</a>
+        </li>
+        <li class="layui-nav-item"><a onclick="toShop()" href="javascript:;">购物车</a></li>
+        <li id="toLogin" class="layui-nav-item"><a href="javascript:void(0)" onclick="toLogin()" style="display:block;">登陆</a></li>
+        <li id="toPersonal" style="display: none;" class="layui-nav-item">
+            <a id="userName" th:href="@{/userService/toUserCenter}">个人中心</a>
+            <dl class="layui-nav-child">
+                <dd><a onclick="loginOut()" href="">登出</a></dd>
+            </dl>
+        </li>
+        <!--        <li id="toPersonal" class="layui-nav-item" style="display: none;"><a href="javascript:void(0)">个人中心</a></li>-->
+    </ul>
+</div>
+
+    <div style="width: 600px;height: 400px;padding-left: 10%;float: left;">
+        <div class="layui-card-header">公告</div>
+        <div class="layui-card-body" >
+            <div th:replace="@{index/rotationChart} :: rotation-chart"></div>
+        </div>
+    </div>
+
+    <div style="padding-left: 15%;float: left;">
+        <div class="layui-card-body" >
+            <div th:replace="@{index/popularity} :: popularity"></div>
+        </div>
+    </div>
+
+
+    <div style="padding-left: 10%;clear: both;float: left;width: 40%;">
+        <a th:href="@{/indexService/toSpecialGoods(type=0)}"><div class="layui-card-header">特色药品</div></a>
+        <div class="layui-card-body" >
+            <div th:replace="@{index/specialGoods} :: specialGoods"></div>
+            <div style="clear: both;padding-left: 10%;"><button onclick="special(0)" style="padding-left: 5%;"  class="layui-btn layui-btn-sm layui-btn-normal">查看更多</button></div>
+        </div>
+    </div>
+
+<div style="padding-left: 10%;float: left;width: 40%;">
+    <a th:href="@{/indexService/toSpecialGoods(type=1)}"><div class="layui-card-header">老幼药品</div></a>
+    <div class="layui-card-body" >
+        <div th:replace="@{index/oldYoungGoods} :: oldYoungGoods"></div>
+        <div style="clear: both;padding-left: 10%;"><button onclick="special(1)" style="padding-left: 5%;" class="layui-btn layui-btn-sm layui-btn-normal">查看更多</button></div>
+    </div>
+</div>
+
+<script>
+    function special(type){
+        window.location.href="/indexService/toSpecialGoods?type="+type;
+    }
+</script>
+
+</body>
+</html>

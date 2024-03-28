@@ -1,0 +1,166 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drug.graduate.mapper.GoodsMapper">
+
+    <select id="queryGoods" resultType="com.drug.graduate.entity.Goods">
+        select * from goods a
+
+            <if test="param4 != null and param4 != ''">
+                inner join goods_type b on a.id = b.goodsId
+            </if>
+        <where>
+            <if test="param4 != null and param4 != ''">
+                and b.type = #{param4}
+            </if>
+            <if test="param5 != null and param5 != ''">
+                and locate(#{param5},name)
+            </if>
+        </where>
+
+        <if test="param3 == 1 ">
+            order by sale DESC
+        </if>
+        <if test="param3 == 2 ">
+            order by sale ASC
+        </if>
+        limit #{param1}, #{param2}
+    </select>
+
+    <select id="queryGoodsCount" resultType="java.lang.Integer">
+        select count(*) from goods a
+
+            <if test="param1 != null and param1 != ''">
+                inner join goods_type b on a.id = b.goodsId
+            </if>
+        <where>
+            <if test="param1 != null and param1 != ''">
+                and b.type = #{param1}
+            </if>
+            <if test="param2 != null and param2 != ''">
+                and locate(#{param2},name)
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getGoodsDetails" resultType="com.drug.graduate.entity.Goods">
+        select * from goods where id = #{id}
+    </select>
+
+    <insert id="addGoods">
+        insert into shopping values (#{userId}, #{goodsId}, #{price}, 1, #{sumPrice})
+    </insert>
+
+    <select id="queryShopping" resultType="java.util.Map">
+        select * from shopping where goodsId = #{param1} and userId = #{param2}
+    </select>
+
+    <update id="updateShopping">
+        update shopping set price = #{price} , num = #{num}, sumPrice = #{sumPrice} where goodsId = #{goodsId}
+        and userId = #{userId}
+    </update>
+
+    <select id="getShoppingData" resultType="java.util.Map">
+        select * from shopping where userId = #{userId}
+    </select>
+
+    <select id="getShoppingGoods" resultType="com.drug.graduate.entity.Goods">
+        select * from goods where id = #{goodsId}
+    </select>
+
+    <delete id="deleteGoods">
+        delete from shopping where userId = #{param1} and goodsId = #{param2}
+    </delete>
+
+    <update id="reduceGoods">
+        update shopping set num = num-1 where userId = #{param1} and goodsId = #{param2}
+    </update>
+
+    <update id="plusGoods">
+        update shopping set num = num+1 where userId = #{param1} and goodsId = #{param2}
+    </update>
+
+    <delete id="clearShop">
+        delete from shopping where userId = #{userId}
+    </delete>
+
+    <select id="getSettlementShop" resultType="java.util.Map">
+        select * from shopping where goodsId=#{param1} and userId = #{param2}
+    </select>
+
+    <select id="getEvaluateGoods" resultType="java.util.Map">
+        select *
+        from
+                (select * from order_goods WHERE userId = #{userId} and status = 0) og,
+                (select * from goods) g
+        where og.goodsId=g.id
+    </select>
+
+    <delete id="shopOrderGoods">
+        delete from shopping where userId = #{param2} and goodsId = #{param1}
+    </delete>
+
+    <insert id="addGoodsComment">
+        insert into comment(userId, goodsId, comment,createTime) values(#{userId},#{goodsId},#{comment},now())
+    </insert>
+
+    <update id="updateOrderGoodsStatus">
+        update order_goods set status = 1 where userId = #{userId} and orderId = #{orderId} and goodsId = #{goodsId}
+    </update>
+
+    <select id="getGoodsComment" resultType="java.util.Map">
+        select *
+        from
+                (select * from comment WHERE goodsId = #{goodsId}) c,
+                (select id as uuserId,name from user) u
+        where c.userId=u.uuserId
+    </select>
+
+    <update id="addSale">
+        update goods set sale = sale + #{num} where id = #{goodsId}
+    </update>
+
+    <select id="specialGoods" resultType="java.util.Map">
+        select * from goods where special = 0 order by sale DESC limit 0,5
+    </select>
+
+    <select id="toSpecialGoods" resultType="java.util.Map">
+        select * from goods where special = #{param4}
+        <if test="param3 != null and param3 != ''">
+            and locate(#{param3},name)
+        </if>
+        limit #{param1}, #{param2}
+    </select>
+
+    <select id="specialGoodsCount" resultType="java.lang.Integer">
+        select count(*) from goods where special = #{param2}
+        <if test="param1 != null and param1 != ''">
+            and locate(#{param1},name)
+        </if>
+    </select>
+
+    <select id="oldYoungGoods" resultType="java.util.Map">
+        select * from goods where special = 1 order by sale DESC limit 0,5
+    </select>
+
+    <select id="newGoods" resultType="java.util.Map">
+        SELECT * FROM goods GROUP BY id desc LIMIT 0,5
+    </select>
+
+    <select id="getGoodsDetail" resultType="java.util.Map">
+        select *
+        from
+                (SELECT synopsis,kind from goods where id = #{goodsId}) uo,
+                (select * from goods_type WHERE goodsId = #{goodsId}) og
+    </select>
+
+    <select id="goodsStock" resultType="java.lang.Integer">
+        select stock from goods where id = #{goodsId}
+    </select>
+
+    <update id="updateStock">
+        update goods set stock = stock - #{goodsNum} where id = #{goodsId}
+    </update>
+</mapper>

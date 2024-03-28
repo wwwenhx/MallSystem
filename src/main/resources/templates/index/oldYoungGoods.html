@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="oldYoungGoods">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{js/jquery-3.6.0.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+</head>
+<body id="body">
+
+<div id="oldYoungGoods">
+
+
+</div>
+
+<script>
+
+    window.to = function (id){
+        window.open('/indexService/goodsDetail?id='+id);
+    }
+</script>
+
+<script>
+
+    $.ajax({
+        url:'/goodsService/oldYoungGoods',
+        type:'post',
+        dataType:'json',
+        success:function (data){
+            let jsonData = eval(data);
+            if (jsonData.code == 400){
+                $('#body').html(jsonData.body);
+                return
+            };
+            let list = jsonData.body;
+            $.each(list,function (i, val){
+                let div = $('<div style="float:left;width:20%;height:30%;padding-left: 10%;padding-bottom: 5%;"></div>');
+                let img = $('<span><a href="javascript:;" onclick="to(' + val.id + ')"><img style="width: 120px;height: 160px;" src="' + val.url + '"></a></span>');
+                let name = $('<p style="pheight: auto;word-wrap: break-word;word-break:break-all;">' + val.name + '</p>');
+                let price = $('<p>¥' + val.price + '</p>');
+                let sale = $('<p>销量:' + val.sale + '</p>');
+                div.append(img,name,price,sale);
+                $('#oldYoungGoods').append(div);
+            });
+        },
+        error:function (){
+            alert("请求老幼药品数据失败")
+        },
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/layui/css/common.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+</head>
+<body>
+    <fieldset class="layui-elem-field" style="margin: 20px;">
+        <legend>收货地址</legend>
+        <div class="layui-field-box">
+            <form class="layui-form layui-form-pane" action="javascript:;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">选择地区</label>
+                    <div class="layui-input-inline">
+                        <select id="P1" name="P1" required="required" lay-filter="province">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select id="C1" name="C1" required="required" lay-filter="city">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select id="A1" name="A1" required="required" lay-filter="area">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="layui-icon">&#xe609;</i></label>
+                    <input id="personalDetail" style="width: 40%;height: 150px;" type="text" name="title" required lay-verify="required" placeholder="详细地址" autocomplete="off" class="layui-input">
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="layui-icon">&#xe609;</i></label>
+                    <input id="personalName" style="width: 40%;" type="text" name="title" requiredlay-verify="required" placeholder="收货人姓名" autocomplete="off" class="layui-input">
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="layui-icon layui-icon-cellphone"></i></label>
+                    <input id="personalPhone" style="width: 40%" type="text" name="title" required lay-verify="required|phone" placeholder="请输入收货手机号" autocomplete="off" class="layui-input">
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </fieldset>
+
+    <!--<fieldset class="layui-elem-field" style="margin: 20px;">
+        <legend>选择结果</legend>
+        <div class="layui-field-box">
+            <form class="layui-form" action="javascript:;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label pca-label-province"></label>
+                    <label class="layui-form-label pca-label-city"></label>
+                    <label class="layui-form-label pca-label-area"></label>
+                </div>
+            </form>
+        </div>
+    </fieldset>-->
+
+    <script type="text/javascript"   th:src="@{/layui/city.js}"></script>
+    <script type="text/javascript">
+        pca.init('select[name=P1]', 'select[name=C1]', 'select[name=A1]', '北京', '北京', '朝阳区');
+    </script>
+
+    <script>
+        //Demo
+        layui.use('form', function(){
+            var form = layui.form;
+
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                addAddress();
+                return false;
+            });
+        });
+    </script>
+
+    <script>
+        function addAddress(){
+            let data = {
+                userId:$.cookie('userId'),
+                phoneNumber:$('#personalPhone').val(),
+                name:$('#personalName').val(),
+                province:$('#P1').val(),
+                city:$('#C1').val(),
+                county:$('#A1').val(),
+                detail:$('#personalDetail').val()
+            };
+            $.ajax({
+                url:"/userService/addAddress",
+                dataType:"json",
+                data:data,
+                type:"post",
+                success:function (data){
+                    let jsonData = eval(data);
+                    alert(data.msg);
+                    let index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                },
+                error:function (){
+                    alert("请求时失败");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <style>
+        .login{
+            margin-top: 7%;
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<input id="randomNumber" type="hidden" value="">
+
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md4 layui-col-md-offset4 login">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">登录</li>
+                    <li>注册</li>
+                </ul>
+                <!--登陆功能-->
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <form th:action="@{/userService/login}" class="layui-form layui-form-pane">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-user"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="phoneNumber" type="text" name="phoneNumber"  lay-verify="required|phone" class="layui-input" placeholder="手机号">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-password"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="password" type="password" name="password" required lay-verify="required|password" class="layui-input" placeholder="密码">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <button onclick="login()" type="button"  class="layui-btn" lay-submit>登录</button>
+                                <span style="margin-left: 30px"><a href="#">忘记密码</a></span>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!--注册功能-->
+                    <div class="layui-tab-item">
+                        <form action="" class="layui-form layui-form-pane">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-user"></i></label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="userName-register" name="username-register" c class="layui-input" placeholder="用户名">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-password"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="password-register" type="password" name="password-register" required lay-verify="required|password" class="layui-input" placeholder="密码">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">单选框</label>
+                                <div class="layui-input-block">
+                                    <input type="radio" name="sex" value="男" title="男">
+                                    <input type="radio" name="sex" value="女" title="女" checked>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon"></i></label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="identity-register" name="identity-register" required lay-verify="required|identity" class="layui-input" placeholder="身份证号码">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-cellphone"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="realName-register" type="text" name="realName" required class="layui-input" placeholder="真实姓名">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-cellphone"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="email-register" type="text" name="email" required lay-verify="required|email" class="layui-input" placeholder="邮箱">
+                                </div>
+                            </div>
+
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"><i class="layui-icon layui-icon-cellphone"></i></label>
+                                <div class="layui-input-block">
+                                    <input id="phoneNumber-register" type="text" name="phone" required lay-verify="required|phone" class="layui-input" placeholder="手机号">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-row layui-col-space20">
+                                    <div class="layui-col-md8 layui-col-xs8">
+                                        <input id="code" type="text" required lay-verify="required" class="layui-input" placeholder="验证码">
+                                    </div>
+                                    <div class="layui-col-md4 layui-col-xs4">
+                                        <a href="javascript:void(0)" onclick="randomCode()" name="btnSendCode" id="btnSendCode" class="layui-btn layui-btn layui-btn-primary layui-btn-fluid">发送验证码至邮箱</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button type="button" onclick="register()" class="layui-btn" lay-submit>注册</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    layui.use(["element","form","layer"],function () {
+        var element = layui.element;
+        var form = layui.form;
+        var layer = layui.layer;
+
+        //表单验证功能
+        form.verify({
+            username: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                    return '用户名不能有特殊字符';
+                }
+                if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                    return '用户名首尾不能出现下划线\'_\'';
+                }
+                if(/^\d+\d+\d$/.test(value)){
+                    return '用户名不能全为数字';
+                }
+            }
+            ,password: [
+                /^[\S]{6,12}$/
+                ,'密码必须6到12位，且不能出现空格'
+            ]
+            ,/*phone:[
+                /^\d{11}$/
+                ,"手机号必须为11位数字"
+            ]*/
+        });
+    })
+
+        function login() {
+
+            var data = {
+                phoneNumber: $('#phoneNumber').val(),
+                password: $('#password').val()
+            }
+            $.ajax({
+                url: "/userService/login",
+                data: data,
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    var dataJson = eval(data);
+                    if (dataJson.code == 200) {
+                        alert(dataJson.msg);
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    }
+                    if (dataJson.code == 400) {
+                        alert(dataJson.msg);
+                    }
+
+                },
+
+                error: function () {
+                    alert("请求失败");
+                }
+            });
+
+        }
+        var $ = layui.jquery,
+            element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+        var form = layui.form;
+
+        var InterValObj; //timer变量，控制时间
+        var count = 60; //间隔函数，1秒执行
+        var curCount;
+        function randomCode() {
+            let mail = $('#email-register').val();
+            if(mail == null || mail == ''){
+                layer.msg("请输入邮箱");
+                return
+            }
+            curCount = count;
+            // var code = Math.round(Math.random()*(9999-1000) + 1000)
+            layer.msg('请稍后');
+            document.getElementById("btnSendCode").setAttribute("disabled", "true"); //设置按钮为禁用状态
+            $('#btnSendCode').addClass('layui-btn-disabled');
+            $('#btnSendCode').text(curCount + "秒后重获");
+            InterValObj = window.setInterval(SetRemainTime, 1000);
+            $.ajax({
+                url: "/userService/getRandomNumber",
+                type: "post",
+                dataType: "json",
+                data:{
+                    mail:mail
+                },
+                success: function (data) {
+                    var dataJson = eval(data);
+                    var randomNumber = dataJson.body;
+                    $('#randomNumber').val(randomNumber);
+                    layer.msg(dataJson.msg);
+                },
+
+                error: function () {
+                    alert('发送验证码失败');
+                }
+            });
+
+        }
+
+    function SetRemainTime() {
+        if(curCount == 0) {
+            $('#btnSendCode').removeClass('layui-btn-disabled');
+            $('#btnSendCode').text("重获验证码");
+            window.clearInterval(InterValObj); // 停止计时器
+            document.getElementById("btnSendCode").removeAttribute("disabled"); //移除禁用状态改为可用
+        } else {
+            curCount--;
+            $('#btnSendCode').text(curCount + "秒后重获");
+        }
+    }
+
+        function register() {
+            var randomCode = $('#randomNumber').val();
+            var code = $('#code').val();
+            if(code == '' || code == null){
+                alert('请输入验证码');
+
+            }
+
+            if(code != '' || code != null){
+                if (code != randomCode) {
+                    alert('验证码错误');
+                }
+            }
+
+            if (code == randomCode) {
+                $.ajax({
+                    url:"/userService/register",
+                    data:{
+                        userName:$('#userName-register').val(),
+                        password:$('#password-register').val(),
+                        sex:$("input[type='radio']:checked").val(),
+                        identity:$('#identity-register').val(),
+                        email:$('#email-register').val(),
+                        phoneNumber:$('#phoneNumber-register').val(),
+                        realName:$('#realName-register').val(),
+                    },
+                    type:"post",
+                    success: function (data){
+                        var dataJson = eval(data);
+                        alert(dataJson.msg);
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    },
+
+                    error: function (){
+                        alert("注册功能出现错误");
+                    }
+                });
+            }
+        }
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/layui/css/common.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/setting.js}"></script>
+</head>
+<body>
+<div class="storeHouse">
+    <fieldset class="layui-elem-field layui-field-title a" style="margin-top: 10px;">
+        <legend>药品销售系统</legend>
+    </fieldset>
+
+    <ul class="layui-nav">
+        <li class="layui-nav-item"><a onclick="index()" th:href="@{/indexService/index}">首页</a></li>
+        <li class="layui-nav-item">
+            <a th:href="@{/indexService/goods}">药品</a>
+        </li>
+        <li class="layui-nav-item"><a href="javascript:;" onclick="toShop()">购物车</a></li>
+        <li id="toLogin" class="layui-nav-item"><a href="javascript:void(0)" onclick="toLogin()" style="display:block;">登陆</a></li>
+        <li id="toPersonal" style="display: none;" class="layui-nav-item layui-this">
+            <a id="userName" th:href="@{/userService/toUserCenter}">个人中心</a>
+            <dl class="layui-nav-child">
+                <dd><a onclick="loginOut()" th:href="@{/indexService/index}">登出</a></dd>
+            </dl>
+        </li>
+        <!--        <li id="toPersonal" class="layui-nav-item" style="display: none;"><a href="javascript:void(0)">个人中心</a></li>-->
+    </ul>
+</div>
+
+<div>
+
+</div>
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-md6" style="width: 500px;">
+        <div class="layui-panel" style=" width: 50%; height: 200px;margin-left: 15%;">
+            <div style="padding: 30%;">个人信息</div>
+        </div>
+    </div>
+        <div class="layui-col-md6">
+            <div class="layui-panel" style="height: 200px;margin-right: 20%;">
+                <div id="userMsg" style="padding: 30px;">
+                    <div id="personalName"><span>用户名:</span></div>
+                    <div id="personalPhone"><span>手机号:</span></div>
+                    <div id="personalEmail"><span>邮箱:</span></div>
+                </div>
+            </div>
+        </div>
+</div>
+<div class="layui-tab">
+    <ul class="layui-tab-title">
+        <li class="layui-this">全部订单</li>
+        <li>未完成订单</li>
+        <li>待评价药品</li>
+        <li>已完成订单</li>
+        <li>未支付订单</li>
+        <li>售后订单</li>
+        <li>地址管理</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div id="order1" class="layui-tab-item layui-show">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>收货地址</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder1">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="order2" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>收货地址</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder2">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="order3" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>名称</th>
+                    <th>单价</th>
+                    <th>简介</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder3">
+
+                </tbody>
+            </table>
+        </div>
+        <div id="order4" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>收货地址</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder4">
+
+                </tbody>
+            </table>
+        </div>
+
+        <div id="order5" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>收货地址</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder5">
+
+                </tbody>
+            </table>
+        </div>
+
+        <div id="order6" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>下单时间</th>
+                    <th>订单金额</th>
+                    <th>收货地址</th>
+                    <th>订单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyOrder6">
+
+                </tbody>
+            </table>
+        </div>
+
+        <div id="address" class="layui-tab-item">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th style="width: 40%">地址</th>
+                    <th style="width: 20%">姓名</th>
+                    <th style="width: 20%">手机号</th>
+                    <th style="width: 20%">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbodyAddress">
+
+                </tbody>
+            </table>
+            <div><button onclick="addAddress()" class="layui-btn layui-btn-radius layui-btn-primary">添加地址</button></div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+    var user = $.cookie('user');
+    if(user!=null && user !=""){
+        let jsonValue = eval("(" + user + ")");
+        $('#personalName').append(jsonValue.name);
+        $('#personalPhone').append(jsonValue.phoneNumber);
+        $('#personalEmail').append(jsonValue.email);
+    }
+
+</script>
+
+<script>
+    //获取全部订单数据
+    $.ajax({
+        url:"/orderService/queryAllOrder",
+        data:{
+            userId:$.cookie('userId')
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let order = jsonData.body;
+                $.each(order, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td>' + val.id + '</td>');
+                    let createTime = $('<td>' + val.createTime + '</td>');
+                    let price = $('<td class="price">¥' + val.price.toFixed(2) + '</td>');
+                    let address = $('<td>'+val.address+'</td>');
+                    let status = $('<td></td>')
+                    if(val.status === 0){
+                        status.html("未发货");
+                    }
+                    if(val.status === 1){
+                        status.html("已发货");
+                    }
+                    if(val.status === 2){
+                        status.html("已完成");
+                    }
+                    if(val.status === 3){
+                        status.html("未支付");
+                    }
+                    if(val.status === 4){
+                        status.html("申请退款");
+                    }
+                    if(val.status === 5){
+                        status.html("已退款");
+                    }
+                    if(val.status === 6){
+                        status.html("待评价");
+                    }
+                    let queryDetail = $('<td><a onclick="detail(this)" href="javascript:;" value="' + val.id + '">查看详情</a></td>');
+                    tr.append(orderId, createTime,price,address,status,queryDetail);
+                    $('#tbodyOrder1').append(tr);
+                });
+            }
+
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder1').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+</script>
+
+<script>
+
+    //获取未完成订单数据
+    $.ajax({
+        url:"/orderService/queryOrderIncomplete",
+        data:{
+            userId:$.cookie('userId'),
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let order = jsonData.body;
+                $.each(order, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td>' + val.id + '</td>');
+                    let createTime = $('<td>' + val.createTime + '</td>');
+                    let price = $('<td class="price">¥' + val.price.toFixed(2) + '</td>');
+                    let address = $('<td>'+val.address+'</td>');
+                    let status = $('<td></td>')
+                    if(val.status === 0){
+                        status.html("未发货");
+                    }
+                    if(val.status === 1){
+                        status.html("已发货");
+                    }
+                    if(val.status === 2){
+                        status.html("已完成");
+                    }
+                    if(val.status === 3){
+                        status.html("未支付");
+                    }
+                    if(val.status === 4){
+                        status.html("申请退款");
+                    }
+                    if(val.status === 5){
+                        status.html("已退款");
+                    }
+                    if(val.status === 6){
+                        status.html("待评价");
+                    }
+                    let queryDetail = $('<td><a onclick="detail(this)" href="javascript:;" value="' + val.id + '">查看详情</a></td>');
+                    tr.append(orderId, createTime,price,address,status,queryDetail);
+                    $('#tbodyOrder2').append(tr);
+                });
+
+            }
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder2').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+</script>
+
+<script>
+    //获取待评价物品数据
+    $.ajax({
+        url:"/orderService/queryOrderEvaluate",
+        data:{
+            userId:$.cookie('userId')
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let goods = jsonData.body;
+                $.each(goods, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td class="orderId">' + val.orderId + '</td>');
+                    let price = $('<td class="price">¥' + val.price.toFixed(2) + '</td>');
+                    let name = $('<td>' + val.name + '</td>');
+                    let synopsis = $('<td>' + val.synopsis + '</td>')
+                    let queryDetail = $('<td><a onclick="comment(this)" href="javascript:;" value="' + val.id + '">去评论</a></td>');
+                    tr.append(orderId,name,price,synopsis,queryDetail);
+                    $('#tbodyOrder3').append(tr);
+                });
+            }
+
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder3').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+</script>
+
+<script>
+    //获取已完成订单数据
+    $.ajax({
+        url:"/orderService/queryOrderCompleted",
+        data:{
+            userId:$.cookie('userId'),
+            status:2
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let order = jsonData.body;
+                $.each(order, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td>' + val.id + '</td>');
+                    let createTime = $('<td>' + val.createTime + '</td>');
+                    let price = $('<td class="price" value="'+val.price+'">¥' + val.price.toFixed(2) + '</td>');
+                    let address = $('<td>' + val.address + '</td>');
+                    let status = $('<td></td>')
+                    if(val.status === 0){
+                        status.html("未发货");
+                    }
+                    if(val.status === 1){
+                        status.html("已发货");
+                    }
+                    if(val.status === 2){
+                        status.html("已完成");
+                    }
+                    if(val.status === 3){
+                        status.html("未支付");
+                    }
+                    if(val.status === 4){
+                        status.html("申请退款");
+                    }
+                    if(val.status === 5){
+                        status.html("已退款");
+                    }
+                    if(val.status === 6){
+                        status.html("待评价");
+                    }
+                    let queryDetail = $('<td><a onclick="detail(this)" href="javascript:;" value="' + val.id + '">查看详情</a></td>');
+                    tr.append(orderId, createTime,price,address,status,queryDetail);
+                    $('#tbodyOrder4').append(tr);
+                });
+            }
+
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder4').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+</script>
+
+<script>
+    //获取未支付订单数据
+    $.ajax({
+        url:"/orderService/queryOrderUnpaid",
+        data:{
+            userId:$.cookie('userId')
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let order = jsonData.body;
+                $.each(order, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td>' + val.id + '</td>');
+                    let createTime = $('<td>' + val.createTime + '</td>');
+                    let price = $('<td class="price" value="'+val.price+'">¥' + val.price.toFixed(2) + '</td>');
+                    let address = $('<td>' + val.address + '</td>');
+                    let status = $('<td></td>')
+                    if(val.status === 0){
+                        status.html("未发货");
+                    }
+                    if(val.status === 1){
+                        status.html("已发货");
+                    }
+                    if(val.status === 2){
+                        status.html("已完成");
+                    }
+                    if(val.status === 3){
+                        status.html("未支付");
+                    }
+                    if(val.status === 4){
+                        status.html("申请退款");
+                    }
+                    if(val.status === 5){
+                        status.html("已退款");
+                    }
+                    if(val.status === 6){
+                        status.html("待评价");
+                    }
+                    let queryDetail = $('<td><a onclick="detail(this)" href="javascript:;" value="' + val.id + '">查看详情</a></td>');
+                    tr.append(orderId, createTime,price,address,status,queryDetail);
+                    $('#tbodyOrder5').append(tr);
+                });
+            }
+
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder5').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+</script>
+
+<script>
+    //获取申请退款订单数据
+    $.ajax({
+        url:"/orderService/queryOrderRefund",
+        data:{
+            userId:$.cookie('userId')
+        },
+        dataType:"json",
+        type:"post",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code==200){
+                let order = jsonData.body;
+                $.each(order, function (i,val){
+                    let tr = $('<tr></tr>')
+                    let orderId = $('<td>' + val.id + '</td>');
+                    let createTime = $('<td>' + val.createTime + '</td>');
+                    let price = $('<td class="price" value="'+val.price+'">¥' + val.price.toFixed(2) + '</td>');
+                    let address = $('<td>' + val.address + '</td>');
+                    let status = $('<td></td>')
+                    if(val.status === 0){
+                        status.html("未发货");
+                    }
+                    if(val.status === 1){
+                        status.html("已发货");
+                    }
+                    if(val.status === 2){
+                        status.html("已完成");
+                    }
+                    if(val.status === 3){
+                        status.html("未支付");
+                    }
+                    if(val.status === 4){
+                        status.html("申请退款");
+                    }
+                    if(val.status === 5){
+                        status.html("已退款");
+                    }
+                    if(val.status === 6){
+                        status.html("待评价");
+                    }
+                    let queryDetail = $('<td><a onclick="detail(this)" href="javascript:;" value="' + val.id + '">查看详情</a></td>');
+                    tr.append(orderId, createTime,price,address,status,queryDetail);
+                    $('#tbodyOrder6').append(tr);
+                });
+            }
+
+            if(jsonData.code==400){
+                let msg = jsonData.msg;
+                $('#tbodyOrder6').html(msg);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+</script>
+
+<script>
+
+    //获取地址数据
+    $.ajax({
+        url:"/userService/queryAddressById",
+        data:{
+            userId:$.cookie('userId')
+        },
+        type:"post",
+        dataType:"json",
+        success:function (data){
+            let jsonData = eval(data);
+            if(jsonData.code == 200){
+                let address = jsonData.body;
+                $.each(address,function (i,val){
+                    let tr = $('<tr></tr>');
+                    let address = $('<td></td>');
+                    let name = $('<td>' + val.name + '</td>');
+                    let phone = $('<td>' + val.phoneNumber + '</td>');
+                    let deleteAddress = $('<td><a onclick="deleteAddress(this)" value="' + val.id + '" href="javascript:;">删除</a></td>')
+                    address.append(val.province, val.city, val.county, val.detail);
+                    tr.append(address, name, phone,deleteAddress);
+                    $('#tbodyAddress').append(tr);
+                });
+            }
+            if(jsonData.code == 400){
+                let btn = $('<div><button onclick="addAddress()" class="layui-btn layui-btn-radius layui-btn-primary">添加地址</button></div>');
+                $('#address').html(jsonData.msg);
+                $('#address').append(btn);
+            }
+        },
+        error:function (){
+            alert("请求失败");
+        }
+    });
+
+    function addAddress(){
+        layer.open({
+            type: 2,//iframe层
+            title: "添加地址",//标题
+            area: ['70%', '600px'],//弹出区域
+            content: 'toAddAddress',//所需弹出的登录/注册界面
+            offset: '50px',//设置弹出层在距离顶部，100px 水平居中
+            end: function (){
+                window.location.reload();
+                return false;
+            }
+        });
+    }
+
+    function deleteAddress(a){
+        $.ajax({
+            url:"/userService/deleteAddress",
+            data:{
+                userId:$.cookie('userId'),
+                id:$(a).attr("value")
+            },
+            dataType:"json",
+            type:"post",
+            success:function (data){
+                let jsonData = eval(data);
+                if(jsonData.code==200){
+                    alert("删除成功");
+                    window.location.reload();
+                }
+            },
+            error:function (){
+                alert("请求失败");
+            }
+        });
+    }
+</script>
+
+<script>
+    function detail(goods){
+        layer.open({
+            type: 2,//iframe层
+            title: "详情",//标题
+            area: ['70%', '600px'],//弹出区域
+            content: "/orderService/orderDetail?orderId="+$(goods).attr("value"),//弹出结算界面
+            offset: '50px',//设置弹出层在距离顶部，100px 水平居中
+            end: function (){
+                window.location.reload();
+                return false;
+            }
+        });
+    }
+</script>
+
+<script>
+    function comment(goodsId){
+        let orderId = $(goodsId).parent().parent().find('.orderId').html();
+        console.log(orderId);
+        console.log($(goodsId).attr("value"));
+        layer.open({
+            type: 2,//iframe层
+            title: "详情",//标题
+            area: ['70%', '600px'],//弹出区域
+            content: "/goodsService/toGoodsComment?goodsId="+$(goodsId).attr("value")+"&orderId="+orderId,//弹出结算界面
+            offset: '50px',//设置弹出层在距离顶部，100px 水平居中
+            end: function (){
+                window.location.reload();
+                return false;
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="popularity">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <title>Title</title>
+</head>
+<body>
+
+<div style="width: 400px;" class="layui-collapse" lay-accordion>
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">人气药品</h2>
+        <div class="layui-colla-content layui-show">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-even lay-skin="nob">
+                        <colgroup>
+                            <col width="300">
+                            <col width="300">
+                            <col>
+                        </colgroup>
+                        <thead>
+
+                        </thead>
+                        <tbody id="tbody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">最新药品</h2>
+        <div class="layui-colla-content">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <table class="layui-table" lay-even lay-skin="nob">
+                        <colgroup>
+                            <col width="300">
+                            <col width="300">
+                            <col>
+                        </colgroup>
+                        <thead>
+
+                        </thead>
+                        <tbody id="tbody2">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        $.ajax({
+            url:'/indexService/popularityGoods',
+            dataType:'json',
+            type:'post',
+            success:function (data){
+                let jsonData = eval(data);
+                $('#tbody').empty();
+                $.each(jsonData,function (i, val){
+                    let tr = $('<tr></tr>');
+                    let td = $('<td><a onclick="to(' + val.id + ')"  href="javascript:;">' + val.name + '</a></td>');
+                    tr.append(td);
+                    $('#tbody').append(tr);
+                });
+            },
+            error:function (){
+
+            }
+        });
+    </script>
+
+<script>
+    $.ajax({
+        url:'/indexService/newGoods',
+        dataType:'json',
+        type:'post',
+        success:function (data){
+            let jsonData = eval(data);
+            $('#tbody2').empty();
+            $.each(jsonData,function (i, val){
+                let tr = $('<tr></tr>');
+                let td = $('<td><a onclick="to(' + val.id + ')"  href="javascript:;">' + val.name + '</a></td>');
+                tr.append(td);
+                $('#tbody2').append(tr);
+            });
+        },
+        error:function (){
+
+        }
+    });
+</script>
+
+    <script>
+        window.to = function (id){
+            window.open('/indexService/goodsDetail?id='+id);
+        }
+    </script>
+</body>
+</html>

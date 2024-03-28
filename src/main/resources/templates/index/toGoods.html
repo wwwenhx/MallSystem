@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" th:fragment="goods">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.cookie.js}"></script>
+    <link th:href="@{/layui/css/layui.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript"   th:src="@{/layer/layer.js}"></script>
+    <script type="text/javascript"   th:src="@{/layui/layui.js}"></script>
+    <title>Title</title>
+</head>
+<body>
+<input id="type" type="hidden" th:value="${type}">
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+    <select id="sort" name="sort" lay-verify="">
+        <option  value="0">默认排序</option>
+        <option  value="1">按销量降序</option>
+        <option  value="2">按销量升序</option>
+    </select>
+</div>
+
+<div class="demoTable">
+    药品名：
+    <div class="layui-inline">
+        <input class="layui-input" name="name" id="name" autocomplete="off">
+    </div>
+    <button id="search" class="layui-btn" data-type="reload">搜索</button>
+</div>
+
+<div>
+    <div id="product">
+
+    </div>
+</div>
+
+<div style="clear:both;margin-left: 30%;" id="layuipage" ></div>
+
+
+<script>
+    function layPage(sort){
+        //分页显示商品
+        layui.use(['jquery', 'layer',  'laypage'], function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                laypage = layui.laypage;
+
+            var page = 1;//当前页
+            var limit = 8;//每页显示的数目
+            var resCount, resData ;
+            var resPage = renderPage1();
+            //渲染展示商品的html页面
+            function renderProductHtml(data){
+                $('#product').empty();
+                let str = "";//用来存储html内容
+                if(data.length > 0){
+                    $.each(data, function(i, val){
+                        let div = $('<div style="float: left;padding-left: 12%;padding-top: 3%;width: 150px;height:300px;overflow: hidden;"></div>');
+                        let a = $('<a href="javascript:;" onclick="to('+val.id+')"></a>')
+                        let img = $('<img style="width: 150px; height: 200px;display: block;vertical-align: middle;" src="' + val.url + '">');
+                        let name = $('<p style="padding-top: 1%;">' + val.name + '</p>');
+                        let price = $('<p style="padding-top: 1%;">¥' + val.price + '</p>');
+                        let sale = $('<p style="padding-top: 1%;">销量:' + val.sale + '</p>');
+                        a.append(img,name,price,sale);
+                        div.append(a);
+                        $('#product').append(div);
+                    });
+
+                }
+
+            }
+
+
+            //同步加载商品数据
+            function renderProduct(page, limit){
+                $.ajax({
+                    async: false,
+                    url: '/indexService/getGoods',
+                    data: {"page": page, "limit": limit,"sort":$(sort).val(),"type":$('#type').val(),"name":$('#name').val()},
+                    dataType: 'json',
+                    success: function(result){
+                        console.info(result);
+                        resCount = result.count;
+                        resData = result.data;
+                        renderProductHtml(resData);
+                    }
+                });
+            }
+
+
+            //分页的完整功能
+            function renderPage1(){
+                renderProduct(page, limit);
+                laypage.render({
+                    elem: 'layuipage'
+                    ,count: resCount
+                    ,limit: limit
+                    ,curr: page
+                    ,theme: '#FFB800'
+                    ,layout: ['count', 'prev', 'page', 'next',  'refresh', 'skip']
+                    ,jump: function(obj, first){
+                        console.info(obj);
+                        page = obj.curr;
+                        limit = obj.limit;
+                        console.log(page);
+                        if(!first){
+                            renderProduct(page, limit);
+                        }
+                    }
+                });
+            }
+        });
+    };
+</script>
+
+<script>
+    $('#sort').on('change',function (){
+        layPage(this);
+    });
+    window.onload=function (){
+        layPage($('#sort').val());
+    }
+    window.to = function (id){
+        window.open('/indexService/goodsDetail?id='+id);
+    }
+
+    $('#search').on('click',function (){
+        layPage($('#sort').val());
+    })
+</script>
+</body>
+</html>

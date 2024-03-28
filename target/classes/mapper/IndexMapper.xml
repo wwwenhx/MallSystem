@@ -1,0 +1,18 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.drug.graduate.mapper.IndexMapper">
+
+    <select id="rotationImg" resultType="java.util.Map">
+        select url from notice
+    </select>
+
+    <select id="popularityGoods" resultType="java.util.Map">
+        select g.name,g.id
+        from
+                (SELECT goodsId from popularity )p,
+                (select * from goods) g
+        where p.goodsId=g.id
+    </select>
+</mapper>
